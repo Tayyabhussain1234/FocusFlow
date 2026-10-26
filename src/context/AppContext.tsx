@@ -71,156 +71,60 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | null>(null);
 
-// Default starter tasks
-const getInitialTasks = (): Task[] => {
-  const today = new Date();
-  const todayStr = formatLocalDate(today);
-
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
-  const yesterdayStr = formatLocalDate(yesterday);
-
-  const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1);
-  const tomorrowStr = formatLocalDate(tomorrow);
-
-  const inThreeDays = new Date(today);
-  inThreeDays.setDate(today.getDate() + 3);
-  const inThreeDaysStr = formatLocalDate(inThreeDays);
-
-  const now = Date.now();
-
-  return [
-    {
-      id: 'task_seed_1',
-      title: 'Review user experience audit & wireframes',
-      description: 'Analyze mobile touch targets, visual hierarchy, and focus state accessibility for upcoming sprint.',
-      priority: 'high',
-      category: 'Work',
-      dueDate: todayStr,
-      estimatedMinutes: 45,
-      completed: true,
-      createdAt: now - 86400000 * 2,
-      completedAt: now - 3600000 * 2,
-    },
-    {
-      id: 'task_seed_2',
-      title: 'Prepare Weekly Engineering Architecture Sync',
-      description: 'Synthesize module decoupling strategies, persistence reliability, and performance benchmarks.',
-      priority: 'high',
-      category: 'Work',
-      dueDate: todayStr,
-      estimatedMinutes: 50,
-      completed: false,
-      createdAt: now - 86400000,
-      completedAt: null,
-    },
-    {
-      id: 'task_seed_3',
-      title: 'Deep dive into reactive state algorithms & memoization',
-      description: 'Study fine-grained reactivity patterns, memory profiling, and virtual DOM diffing mechanisms.',
-      priority: 'medium',
-      category: 'Study',
-      dueDate: tomorrowStr,
-      estimatedMinutes: 60,
-      completed: false,
-      createdAt: now - 86400000 * 3,
-      completedAt: null,
-    },
-    {
-      id: 'task_seed_4',
-      title: 'Refactor data validation & boundary safety',
-      description: 'Ensure safe serialization and type assertions for local storage collections.',
-      priority: 'medium',
-      category: 'Work',
-      dueDate: yesterdayStr,
-      estimatedMinutes: 30,
-      completed: true,
-      createdAt: now - 86400000 * 4,
-      completedAt: now - 86400000,
-    },
-    {
-      id: 'task_seed_5',
-      title: 'Mindful evening review & reading session',
-      description: 'Review productivity journal, reflect on deep focus blocks, and plan next day priorities.',
-      priority: 'low',
-      category: 'Personal',
-      dueDate: todayStr,
-      estimatedMinutes: 25,
-      completed: false,
-      createdAt: now - 86400000,
-      completedAt: null,
-    },
-    {
-      id: 'task_seed_6',
-      title: 'Quarterly financial budget allocation & ledger sync',
-      description: 'Reconcile business expenses, review subscriptions, and allocate development tooling budgets.',
-      priority: 'low',
-      category: 'Finance',
-      dueDate: inThreeDaysStr,
-      estimatedMinutes: 40,
-      completed: false,
-      createdAt: now - 86400000 * 2,
-      completedAt: null,
-    },
-  ];
+// Retrieve stored tasks, removing any legacy seed records
+const getCleanStoredTasks = (): Task[] => {
+  if (typeof window === 'undefined') return [];
+  try {
+    const stored = window.localStorage.getItem('focusflow_tasks_v2');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed)) {
+        return parsed.filter((t: Task) => !t.id.startsWith('task_seed_'));
+      }
+    }
+    // Clear legacy v1 seed data if present
+    const oldStored = window.localStorage.getItem('focusflow_tasks_v1');
+    if (oldStored) {
+      window.localStorage.removeItem('focusflow_tasks_v1');
+      const parsed = JSON.parse(oldStored);
+      if (Array.isArray(parsed)) {
+        const cleaned = parsed.filter((t: Task) => !t.id.startsWith('task_seed_'));
+        window.localStorage.setItem('focusflow_tasks_v2', JSON.stringify(cleaned));
+        return cleaned;
+      }
+    }
+  } catch {
+    // fallback to empty
+  }
+  return [];
 };
 
-// Initial focus sessions for authentic historical charts
-const getInitialSessions = (): FocusSession[] => {
-  const now = Date.now();
-  const dayMs = 86400000;
-
-  return [
-    {
-      id: 'session_init_1',
-      taskId: 'task_seed_1',
-      taskTitle: 'Review user experience audit & wireframes',
-      sessionType: 'focus',
-      durationMinutes: 25,
-      startedAt: now - 3600000 * 3,
-      completedAt: now - 3600000 * 2.5,
-      status: 'completed',
-    },
-    {
-      id: 'session_init_2',
-      taskId: 'task_seed_1',
-      taskTitle: 'Review user experience audit & wireframes',
-      sessionType: 'focus',
-      durationMinutes: 25,
-      startedAt: now - 3600000 * 2.4,
-      completedAt: now - 3600000 * 1.9,
-      status: 'completed',
-    },
-    {
-      id: 'session_init_3',
-      taskId: 'task_seed_4',
-      taskTitle: 'Refactor data validation & boundary safety',
-      sessionType: 'focus',
-      durationMinutes: 25,
-      startedAt: now - dayMs - 3600000 * 4,
-      completedAt: now - dayMs - 3600000 * 3.5,
-      status: 'completed',
-    },
-    {
-      id: 'session_init_4',
-      taskId: 'task_seed_4',
-      taskTitle: 'Refactor data validation & boundary safety',
-      sessionType: 'focus',
-      durationMinutes: 25,
-      startedAt: now - dayMs * 2 - 3600000 * 5,
-      completedAt: now - dayMs * 2 - 3600000 * 4.5,
-      status: 'completed',
-    },
-    {
-      id: 'session_init_5',
-      sessionType: 'focus',
-      durationMinutes: 25,
-      startedAt: now - dayMs * 3 - 3600000 * 6,
-      completedAt: now - dayMs * 3 - 3600000 * 5.5,
-      status: 'completed',
-    },
-  ];
+// Retrieve stored sessions, removing any legacy seed records
+const getCleanStoredSessions = (): FocusSession[] => {
+  if (typeof window === 'undefined') return [];
+  try {
+    const stored = window.localStorage.getItem('focusflow_sessions_v2');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed)) {
+        return parsed.filter((s: FocusSession) => !s.id.startsWith('session_init_'));
+      }
+    }
+    // Clear legacy v1 seed data if present
+    const oldStored = window.localStorage.getItem('focusflow_sessions_v1');
+    if (oldStored) {
+      window.localStorage.removeItem('focusflow_sessions_v1');
+      const parsed = JSON.parse(oldStored);
+      if (Array.isArray(parsed)) {
+        const cleaned = parsed.filter((s: FocusSession) => !s.id.startsWith('session_init_'));
+        window.localStorage.setItem('focusflow_sessions_v2', JSON.stringify(cleaned));
+        return cleaned;
+      }
+    }
+  } catch {
+    // fallback to empty
+  }
+  return [];
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -254,11 +158,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  // Tasks state with safe localStorage persistence
-  const [tasks, setTasks] = useLocalStorage<Task[]>('focusflow_tasks_v1', getInitialTasks());
+  // Tasks state initialized completely clean without dummy data
+  const [tasks, setTasks] = useLocalStorage<Task[]>('focusflow_tasks_v2', getCleanStoredTasks());
 
-  // Focus sessions state with persistence
-  const [sessions, setSessions] = useLocalStorage<FocusSession[]>('focusflow_sessions_v1', getInitialSessions());
+  // Focus sessions state initialized completely clean without dummy data
+  const [sessions, setSessions] = useLocalStorage<FocusSession[]>('focusflow_sessions_v2', getCleanStoredSessions());
 
   // Toasts
   const [toasts, setToasts] = useState<ToastMessage[]>([]);

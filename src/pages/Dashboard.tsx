@@ -53,7 +53,9 @@ export const Dashboard: React.FC = () => {
             Focus on what moves the needle.
           </h2>
           <p className="mt-1 text-xs sm:text-sm text-[#A3A8AE] max-w-xl">
-            {todayAndOverdueTasks.length > 0
+            {tasks.length === 0
+              ? 'Your workspace is ready. Create your first task or start a focus session to begin.'
+              : todayAndOverdueTasks.length > 0
               ? `You have ${todayAndOverdueTasks.length} priority task${
                   todayAndOverdueTasks.length === 1 ? '' : 's'
                 } needing your attention today.`
