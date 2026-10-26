@@ -1,0 +1,6 @@
+{
+  "name": "FocusFlow",
+  "description": "Plan Smarter. Focus Deeper. Achieve More. A premium productivity web app featuring a smart task manager, Pomodoro focus timer, interactive weekly planner, and productivity insights.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

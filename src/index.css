@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-main: #101112;
+    --bg-sidebar: #151719;
+    --bg-card: #1B1E21;
+    --bg-elevated: #22262A;
+    --accent-primary: #FFD166;
+    --accent-secondary: #FF8A00;
+    --text-main: #F7F7F5;
+    --text-muted: #A3A8AE;
+    --border-color: #303438;
+    --success: #72D6A0;
+    --error: #FF7373;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    overflow-x: hidden;
+  }
+
+  /* Custom subtle scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #101112;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #303438;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #FFD166;
+  }
+}
+
+/* Tabular figures for aligned numerical and timestamp readouts */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
